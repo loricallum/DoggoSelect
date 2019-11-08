@@ -5,12 +5,19 @@ const form = document.querySelector('form');
 // ------------------------------------------
 //  FETCH FUNCTIONS
 // ------------------------------------------
-fetch('https://dog.ceo/api/breeds/list')
+
+
+function fetchData(url) {
+    return fetch(url)
+            .then(res => res.json())
+}
+
+fetchData('https://dog.ceo/api/breeds/list')
     .then(response => response.json())
 //then method that converts the data and response from the JSON
     .then(data => generateOptions(data.message))
 
-fetch('https://dog.ceo/api/breeds/image/random')
+fetchData('https://dog.ceo/api/breeds/image/random')
     .then(response => response.json())
     .then(data => generateImage(data.message)) //call to a function
 // ------------------------------------------
@@ -19,7 +26,8 @@ fetch('https://dog.ceo/api/breeds/image/random')
 function generateOptions(data) {
     const options = data.map(item => `
         <option value='${item}'>${item}</option>
-    `);
+
+    `).join('');
     select.innerHTML = options;
 }
 
@@ -31,9 +39,25 @@ function generateImage(data) {
         card.innerHTML = html;
 }
 
+function fetchBreedImage() {
+    const breed = select.value;
+    const img = card.querySelector('img');
+    const p = card.querySelector('p');
+
+    fetchData(`https://dog.ceo/api/breed/${breed}/images/random`)
+            .then(data => {
+            img.src = data.message;
+            img.alt = breed;
+            p.textContent = `Click to view more ${breed}s`;
+        })
+}
+
 // ------------------------------------------
 //  EVENT LISTENERS
 // ------------------------------------------
+select.addEventListener('change', fetchBreedImage);
+card.addEventListener('click' , fetchBreedImage);
+
 
 
 
